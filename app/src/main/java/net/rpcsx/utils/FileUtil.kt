@@ -231,6 +231,21 @@ object FileUtil {
         }
     }
 
+    fun importConfig(ctx: Context, uri: Uri): Boolean {
+        return try {
+            val inputStream: InputStream = ctx.contentResolver.openInputStream(uri) ?: return false
+            val outputFile: File = ctx.getExternalFilesDir(null)!!.resolve("config.yml")
+            val outputStream: OutputStream = outputFile.outputStream()
+            inputStream.copyTo(outputStream)
+            inputStream.close()
+            outputStream.close()
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
     fun launchInternalDir(ctx: Context): Boolean {
         if (!ctx.launchBrowseIntent(Intent.ACTION_VIEW)) {
             if (!ctx.launchBrowseIntent()) {
