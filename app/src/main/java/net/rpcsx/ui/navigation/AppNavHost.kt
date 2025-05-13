@@ -173,268 +173,303 @@ fun AppNavHost() {
 
     val settings = remember { mutableStateOf(JSONObject(RPCSX.instance.settingsGet(""))) }
 
-    NavHost(
-        navController = navController,
-        startDestination = "games"
-    ) {
-        composable(
-            route = "games"
-        ) {
-            GamesDestination(
-                navigateToSettings = { navController.navigate("settings") },
-                drawerState
-            )
-        }
-
-        composable(
-            route = "users"
-        ) {
-            UsersScreen(navigateBack = navController::navigateUp)
-        }
-
-        fun unwrapSetting(obj: JSONObject, path: String = "") {
-            obj.keys().forEach self@{ key ->
-                val item = obj[key]
-                val elemPath = "$path@@$key"
-                val elemObject = item as? JSONObject
-                if (elemObject == null) {
-                    Log.e("Main", "element is not object: settings$elemPath, $item")
-                    return@self
-                }
-
-                if (elemObject.has("type")) {
-                    return@self
-                }
-
-                Log.e("Main", "registration settings$elemPath")
-
-                composable(
-                    route = "settings$elemPath"
+    Scaffold(
+        bottomBar = {
+            if (currentRoute in listOf("games", "users", "settings")) {
+                Box(
+                    modifier = Modifier
+                        .padding(bottom = 16.dp)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.BottomCenter
                 ) {
-                    AdvancedSettingsScreen(
-                        navigateBack = navController::navigateUp,
-                        navigateTo = navController::navigate,
-                        settings = elemObject,
-                        path = elemPath
-                    )
+                    NavigationBar(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .clip(RoundedCornerShape(24.dp))
+                            .shadow(8.dp, RoundedCornerShape(24.dp))
+                            .background(MaterialTheme.colorScheme.surface),
+                        tonalElevation = 0.dp,
+                    ) {
+                        NavigationBarItem(
+                            selected = currentRoute == "games",
+                            onClick = { navController.navigate("games") },
+                            icon = { Icon(Icons.Default.Home, contentDescription = "Games") },
+                            label = { Text("Home") }
+                        )
+                        NavigationBarItem(
+                            selected = currentRoute == "settings",
+                            onClick = { navController.navigate("settings") },
+                            icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
+                            label = { Text("Settings") }
+                        )
+                    }
                 }
-
-                unwrapSetting(elemObject, elemPath)
             }
         }
-
-        composable(
-            route = "settings@@$"
+    ) { innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = "games"
         ) {
-            AdvancedSettingsScreen(
-                navigateBack = navController::navigateUp,
-                navigateTo = navController::navigate,
-                settings = settings.value,
-            )
-        }
+            composable(
+                route = "games"
+            ) {
+                GamesDestination(
+                    navigateToSettings = { navController.navigate("settings") },
+                    drawerState
+                )
+            }
 
-        composable(
-            route = "settings"
-        ) {
-            SettingsScreen(
-                navigateBack = navController::navigateUp,
-                navigateTo = navController::navigate,
-            )
-        }
+            composable(
+                route = "users"
+            ) {
+                UsersScreen(navigateBack = navController::navigateUp)
+            }
 
-        composable(
-            route = "controls"
-        ) {
-            ControllerSettings(
-                navigateBack = navController::navigateUp
-            )
-        }
-
-        composable(
-            route = "drivers"
-        ) {
-            GpuDriversScreen(
-                navigateBack = navController::navigateUp
-            )
-        }
-
-        composable(
-            route = "update_channels"
-        ) {
-            UpdateChannelsScreen(
-                navigateBack = navController::navigateUp,
-                navigateTo = navController::navigate,
-            )
-        }
-
-        composable(
-            route = "gpu_driver_channels"
-        ) {
-            UpdateChannelListScreen(
-                navigateBack = navController::navigateUp,
-                title = "GPU Driver Download Channel",
-                items = gpuDriverChannels.toList(),
-                selected = prefs.getString("gpu_driver_channel", null),
-                onSelect = { channel ->
-                    prefs.edit {
-                        putString("gpu_driver_channel", channel)
+            fun unwrapSetting(obj: JSONObject, path: String = "") {
+                obj.keys().forEach self@{ key ->
+                    val item = obj[key]
+                    val elemPath = "$path@@$key"
+                    val elemObject = item as? JSONObject
+                    if (elemObject == null) {
+                        Log.e("Main", "element is not object: settings$elemPath, $item")
+                        return@self
                     }
 
-                    navController.navigateUp()
-                },
-                onDelete = { channel ->
-                    gpuDriverChannels = gpuDriverChannels.filter { it != channel }
-
-                    prefs.edit {
-                        putStringSet("gpu_driver_channel_list", gpuDriverChannels.toSet())
-                    }
-                },
-                onAdd = { channel ->
-                    if (gpuDriverChannels.find { it == channel } != null) {
-                        return@UpdateChannelListScreen
+                    if (elemObject.has("type")) {
+                        return@self
                     }
 
-                    gpuDriverChannels = gpuDriverChannels + channel
+                    Log.e("Main", "registration settings$elemPath")
 
-                    prefs.edit {
-                        putStringSet("gpu_driver_channel_list", gpuDriverChannels.toSet())
-                    }
-                },
-                isDeletable = { gpuDriverChannels.size > 1 })
-        }
-
-        composable(
-            route = "ui_channels"
-        ) {
-            UpdateChannelListScreen(
-                navigateBack = navController::navigateUp,
-                title = "RPCSX UI Android Update Channel",
-                items = channelsToUiText(uiChannels, ReleaseUiChannel, DevUiChannel),
-                selected = channelToUiText(
-                    prefs.getString("ui_channel", ReleaseUiChannel)!!,
-                    ReleaseUiChannel,
-                    DevUiChannel
-                ),
-                onSelect = { channel ->
-                    prefs.edit {
-                        putString(
-                            "ui_channel",
-                            uiTextToChannel(channel, ReleaseUiChannel, DevUiChannel)
-                        )
-                    }
-
-                    navController.navigateUp()
-                },
-                onDelete = { channel ->
-                    uiChannels = uiChannels.filter { it != channel }
-
-                    prefs.edit {
-                        putStringSet(
-                            "ui_channel_list",
-                            uiTextToChannels(uiChannels, ReleaseUiChannel, DevUiChannel).toSet()
-                        )
-                    }
-                },
-                onAdd = { channel ->
-                    if (!isValidChannel(
-                            channel,
-                            ReleaseUiChannel,
-                            DevUiChannel
-                        ) || uiChannels.find { it == channel } != null
+                    composable(
+                        route = "settings$elemPath"
                     ) {
-                        return@UpdateChannelListScreen
-                    }
-
-                    uiChannels += channel
-
-                    prefs.edit {
-                        putStringSet(
-                            "ui_channel_list",
-                            uiTextToChannels(uiChannels, ReleaseUiChannel, DevUiChannel).toSet()
-                        )
-                    }
-                },
-                isDeletable = { isValidChannel(it, ReleaseUiChannel, DevUiChannel) }
-            )
-        }
-
-        composable(
-            route = "rpcsx_channels"
-        ) {
-            var downloadArch by remember { mutableStateOf(RpcsxUpdater.getArch()) }
-            UpdateChannelListScreen(
-                navigateBack = navController::navigateUp,
-                title = "RPCSX Download Channel",
-                items = channelsToUiText(rpcsxChannels, ReleaseRpcsxChannel, DevRpcsxChannel),
-                selected = channelToUiText(
-                    prefs.getString("rpcsx_channel", ReleaseRpcsxChannel)!!,
-                    ReleaseRpcsxChannel,
-                    DevRpcsxChannel
-                ),
-                onSelect = { channel ->
-                    prefs.edit {
-                        putString(
-                            "rpcsx_channel",
-                            uiTextToChannel(channel, ReleaseRpcsxChannel, DevRpcsxChannel)
+                        AdvancedSettingsScreen(
+                            navigateBack = navController::navigateUp,
+                            navigateTo = navController::navigate,
+                            settings = elemObject,
+                            path = elemPath
                         )
                     }
 
-                    navController.navigateUp()
-                },
-                onDelete = { channel ->
-                    rpcsxChannels = rpcsxChannels.filter { it != channel }
-
-                    prefs.edit {
-                        putStringSet(
-                            "rpcsx_channel_list",
-                            uiTextToChannels(
-                                rpcsxChannels,
-                                ReleaseRpcsxChannel,
-                                DevRpcsxChannel
-                            ).toSet()
-                        )
-                    }
-                },
-                onAdd = { channel ->
-                    if (!isValidChannel(
-                            channel,
-                            ReleaseRpcsxChannel,
-                            DevRpcsxChannel
-                        ) || rpcsxChannels.find { it == channel } != null
-                    ) {
-                        return@UpdateChannelListScreen
-                    }
-
-                    rpcsxChannels += channel
-
-                    prefs.edit {
-                        putStringSet(
-                            "rpcsx_channel_list",
-                            uiTextToChannels(
-                                rpcsxChannels,
-                                ReleaseRpcsxChannel,
-                                DevRpcsxChannel
-                            ).toSet()
-                        )
-                    }
-                },
-                isDeletable = { isValidChannel(it, ReleaseRpcsxChannel, DevRpcsxChannel) },
-                actions = {
-                    SingleSelectionDialog(
-                        currentValue = downloadArch,
-                        values = listOf("armv8-a", "armv8.1-a", "armv8.2-a", "armv8.4-a", "armv8.5-a", "armv9-a", "armv9.1-a"),
-                        title = "",
-                        icon = null,
-                        onValueChange = { value ->
-                            RpcsxUpdater.setArch(value)
-                            downloadArch = value
-                        }
-                    )
+                    unwrapSetting(elemObject, elemPath)
                 }
-            )
-        }
+            }
 
-        unwrapSetting(settings.value)
+            composable(
+                route = "settings@@$"
+            ) {
+                AdvancedSettingsScreen(
+                    navigateBack = navController::navigateUp,
+                    navigateTo = navController::navigate,
+                    settings = settings.value,
+                )
+            }
+
+            composable(
+                route = "settings"
+            ) {
+                SettingsScreen(
+                    navigateBack = navController::navigateUp,
+                    navigateTo = navController::navigate,
+                )
+            }
+
+            composable(
+                route = "controls"
+            ) {
+                ControllerSettings(
+                    navigateBack = navController::navigateUp
+                )
+            }
+
+            composable(
+                route = "drivers"
+            ) {
+                GpuDriversScreen(
+                    navigateBack = navController::navigateUp
+                )
+            }
+
+            composable(
+                route = "update_channels"
+            ) {
+                UpdateChannelsScreen(
+                    navigateBack = navController::navigateUp,
+                    navigateTo = navController::navigate,
+                )
+            }
+
+            composable(
+                route = "gpu_driver_channels"
+            ) {
+                UpdateChannelListScreen(
+                    navigateBack = navController::navigateUp,
+                    title = "GPU Driver Download Channel",
+                    items = gpuDriverChannels.toList(),
+                    selected = prefs.getString("gpu_driver_channel", null),
+                    onSelect = { channel ->
+                        prefs.edit {
+                            putString("gpu_driver_channel", channel)
+                        }
+
+                        navController.navigateUp()
+                    },
+                    onDelete = { channel ->
+                        gpuDriverChannels = gpuDriverChannels.filter { it != channel }
+
+                        prefs.edit {
+                            putStringSet("gpu_driver_channel_list", gpuDriverChannels.toSet())
+                        }
+                    },
+                    onAdd = { channel ->
+                        if (gpuDriverChannels.find { it == channel } != null) {
+                            return@UpdateChannelListScreen
+                        }
+
+                        gpuDriverChannels = gpuDriverChannels + channel
+
+                        prefs.edit {
+                            putStringSet("gpu_driver_channel_list", gpuDriverChannels.toSet())
+                        }
+                    },
+                    isDeletable = { gpuDriverChannels.size > 1 })
+            }
+
+            composable(
+                route = "ui_channels"
+            ) {
+                UpdateChannelListScreen(
+                    navigateBack = navController::navigateUp,
+                    title = "RPCSX UI Android Update Channel",
+                    items = channelsToUiText(uiChannels, ReleaseUiChannel, DevUiChannel),
+                    selected = channelToUiText(
+                        prefs.getString("ui_channel", ReleaseUiChannel)!!,
+                        ReleaseUiChannel,
+                        DevUiChannel
+                    ),
+                    onSelect = { channel ->
+                        prefs.edit {
+                            putString(
+                                "ui_channel",
+                                uiTextToChannel(channel, ReleaseUiChannel, DevUiChannel)
+                            )
+                        }
+
+                        navController.navigateUp()
+                    },
+                    onDelete = { channel ->
+                        uiChannels = uiChannels.filter { it != channel }
+
+                        prefs.edit {
+                            putStringSet(
+                                "ui_channel_list",
+                                uiTextToChannels(uiChannels, ReleaseUiChannel, DevUiChannel).toSet()
+                            )
+                        }
+                    },
+                    onAdd = { channel ->
+                        if (!isValidChannel(
+                                channel,
+                                ReleaseUiChannel,
+                                DevUiChannel
+                            ) || uiChannels.find { it == channel } != null
+                        ) {
+                            return@UpdateChannelListScreen
+                        }
+
+                        uiChannels += channel
+
+                        prefs.edit {
+                            putStringSet(
+                                "ui_channel_list",
+                                uiTextToChannels(uiChannels, ReleaseUiChannel, DevUiChannel).toSet()
+                            )
+                        }
+                    },
+                    isDeletable = { isValidChannel(it, ReleaseUiChannel, DevUiChannel) }
+                )
+            }
+
+            composable(
+                route = "rpcsx_channels"
+            ) {
+                var downloadArch by remember { mutableStateOf(RpcsxUpdater.getArch()) }
+                UpdateChannelListScreen(
+                    navigateBack = navController::navigateUp,
+                    title = "RPCSX Download Channel",
+                    items = channelsToUiText(rpcsxChannels, ReleaseRpcsxChannel, DevRpcsxChannel),
+                    selected = channelToUiText(
+                        prefs.getString("rpcsx_channel", ReleaseRpcsxChannel)!!,
+                        ReleaseRpcsxChannel,
+                        DevRpcsxChannel
+                    ),
+                    onSelect = { channel ->
+                        prefs.edit {
+                            putString(
+                                "rpcsx_channel",
+                                uiTextToChannel(channel, ReleaseRpcsxChannel, DevRpcsxChannel)
+                            )
+                        }
+
+                        navController.navigateUp()
+                    },
+                    onDelete = { channel ->
+                        rpcsxChannels = rpcsxChannels.filter { it != channel }
+
+                        prefs.edit {
+                            putStringSet(
+                                "rpcsx_channel_list",
+                                uiTextToChannels(
+                                    rpcsxChannels,
+                                    ReleaseRpcsxChannel,
+                                    DevRpcsxChannel
+                                ).toSet()
+                            )
+                        }
+                    },
+                    onAdd = { channel ->
+                        if (!isValidChannel(
+                                channel,
+                                ReleaseRpcsxChannel,
+                                DevRpcsxChannel
+                            ) || rpcsxChannels.find { it == channel } != null
+                        ) {
+                            return@UpdateChannelListScreen
+                        }
+
+                        rpcsxChannels += channel
+
+                        prefs.edit {
+                            putStringSet(
+                                "rpcsx_channel_list",
+                                uiTextToChannels(
+                                    rpcsxChannels,
+                                    ReleaseRpcsxChannel,
+                                    DevRpcsxChannel
+                                ).toSet()
+                            )
+                        }
+                    },
+                    isDeletable = { isValidChannel(it, ReleaseRpcsxChannel, DevRpcsxChannel) },
+                    actions = {
+                        SingleSelectionDialog(
+                            currentValue = downloadArch,
+                            values = listOf("armv8-a", "armv8.1-a", "armv8.2-a", "armv8.4-a", "armv8.5-a", "armv9-a", "armv9.1-a"),
+                            title = "",
+                            icon = null,
+                            onValueChange = { value ->
+                                RpcsxUpdater.setArch(value)
+                                downloadArch = value
+                            }
+                        )
+                    }
+                )
+            }
+
+            unwrapSetting(settings.value)
+        }
     }
 }
 
