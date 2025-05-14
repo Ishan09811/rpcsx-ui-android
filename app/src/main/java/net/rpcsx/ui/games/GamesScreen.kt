@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
@@ -46,6 +47,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,8 +58,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
+import net.rpcsx.viewmodel.MainViewModel
 import net.rpcsx.BuildConfig
 import net.rpcsx.EmulatorState
 import net.rpcsx.FirmwareRepository
@@ -346,11 +350,12 @@ fun GameItem(game: Game) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GamesScreen() {
+fun GamesScreen(viewModel: MainViewModel = viewModel()) {
     val context = LocalContext.current
     val games = remember { GameRepository.list() }
     val isRefreshing by remember { GameRepository.isRefreshing }
     val state = rememberPullToRefreshState()
+    val gridState = rememberLazyGridState()
     var uiUpdateVersion by remember { mutableStateOf<String?>(null) }
     var uiUpdate by remember { mutableStateOf(false) }
     var uiUpdateProgressValue by remember { mutableLongStateOf(0) }
@@ -365,6 +370,20 @@ fun GamesScreen() {
     val activeDialogs = remember { AlertDialogQueue.dialogs }
 
     val gameInProgress = games.find { it.progressList.isNotEmpty() }
+
+    var lastScrollOffset by remember { mutableStateOf(0) }
+
+    LaunchedEffect(gridState) {
+        snapshotFlow { gridState.firstVisibleItemScrollOffset }
+            .collect { offset ->
+                if (offset > lastScrollOffset) {
+                    viewModel.setBottomNavigationVisibility(false)
+                } else if (offset < lastScrollOffset) {
+                    viewModel.setBottomNavigationVisibility(true)
+                }
+                lastScrollOffset = offset
+            }
+    }
 
     val checkForUpdates = suspend {
         rpcsxUpdateVersion = RpcsxUpdater.checkForUpdate()
@@ -575,7 +594,8 @@ fun GamesScreen() {
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 320.dp * 0.6f),
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            state = gridState
         ) {
             items(count = games.size, key = { index -> games[index].info.path }) { index ->
                 GameItem(games[index])
