@@ -13,6 +13,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.core.tween
@@ -133,6 +134,15 @@ fun AppNavHost(viewModel: MainViewModel = viewModel()) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val isBottomNavigationVisible by viewModel.isBottomNavigationVisible.collectAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val visibleState = remember {
+        MutableTransitionState(false).apply {
+            targetState = currentRoute in listOf("games", "settings") && isBottomNavigationVisible
+        }
+    }
+    
+    LaunchedEffect(currentRoute, isBottomNavigationVisible) {
+        visibleState.targetState = currentRoute in listOf("games", "settings") && isBottomNavigationVisible
+    }
 
     var gpuDriverChannelList =
         prefs.getStringSet("gpu_driver_channel_list", setOf(DefaultGpuDriverChannel))?.toList()
@@ -200,7 +210,7 @@ fun AppNavHost(viewModel: MainViewModel = viewModel()) {
     Scaffold(
         bottomBar = {
             AnimatedVisibility(
-                visible = currentRoute in listOf("games", "settings") && isBottomNavigationVisible,
+                visibleState = visibleState,
                 enter = slideInVertically(
                     initialOffsetY = { it }, // Slide in from bottom
                     animationSpec = tween(durationMillis = 300)
