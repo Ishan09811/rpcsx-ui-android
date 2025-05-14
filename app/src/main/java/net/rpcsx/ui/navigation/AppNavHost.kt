@@ -196,7 +196,17 @@ fun AppNavHost(viewModel: MainViewModel = viewModel()) {
 
     Scaffold(
         bottomBar = {
-            if (currentRoute in listOf("games", "settings") && isBottomNavigationVisible) {
+            AnimatedVisibility(
+                visible = currentRoute in listOf("games", "settings") && isBottomNavigationVisible,
+                enter = slideInVertically(
+                    initialOffsetY = { it }, // Slide in from bottom
+                    animationSpec = tween(durationMillis = 300)
+                 ),
+                 exit = slideOutVertically(
+                    vtargetOffsetY = { it }, // Slide out to bottom
+                    animationSpec = tween(durationMillis = 200)
+                )
+            ) {
                 Box(
                     modifier = Modifier
                         .windowInsetsPadding(NavigationBarDefaults.windowInsets)
