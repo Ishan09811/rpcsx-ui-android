@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -73,7 +74,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.layout.wrapContentHeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -196,7 +196,7 @@ fun AppNavHost() {
             if (currentRoute in listOf("games", "settings")) {
                 Box(
                     modifier = Modifier
-                        .padding(bottom = 16.dp)
+                        .windowInsetsPadding(NavigationBarDefaults.windowInsets)
                         .fillMaxWidth(),
                     contentAlignment = Alignment.BottomCenter
                 ) {
@@ -213,10 +213,9 @@ fun AppNavHost() {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .windowInsetsPadding(NavigationBarDefaults.windowInsets)
                                 .wrapContentHeight()
                                 .selectableGroup(),
-                            horizontalArrangement = Arrangement.spacedBy(NavigationBarItemHorizontalPadding),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             NavigationBarItem(
