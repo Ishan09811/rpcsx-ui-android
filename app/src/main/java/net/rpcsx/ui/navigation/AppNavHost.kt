@@ -82,6 +82,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import net.rpcsx.BuildConfig
 import net.rpcsx.EmulatorState
@@ -118,7 +119,7 @@ import org.json.JSONObject
 
 @Preview
 @Composable
-fun AppNavHost() {
+fun AppNavHost(viewModel: MainViewModel = viewModel()) {
     val context = LocalContext.current
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -126,6 +127,7 @@ fun AppNavHost() {
     val prefs = remember { context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE) }
     val rpcsxLibrary by remember { RPCSX.activeLibrary }
     val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val isBottomNavigationVisible by viewModel.isBottomNavigationVisible.collectAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
     var gpuDriverChannelList =
@@ -193,7 +195,7 @@ fun AppNavHost() {
 
     Scaffold(
         bottomBar = {
-            if (currentRoute in listOf("games", "settings")) {
+            if (currentRoute in listOf("games", "settings") && isBottomNavigationVisible) {
                 Box(
                     modifier = Modifier
                         .windowInsetsPadding(NavigationBarDefaults.windowInsets)
