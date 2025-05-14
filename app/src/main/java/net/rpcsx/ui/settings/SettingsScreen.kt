@@ -502,6 +502,7 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(contentPadding),
+            state = listState
         ) {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
