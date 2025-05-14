@@ -220,13 +220,29 @@ fun AppNavHost() {
                         ) {
                             NavigationBarItem(
                                 selected = currentRoute == "games",
-                                onClick = { navController.navigate("games") },
+                                onClick = { 
+                                    navController.navigate("games") {
+                                        popUpTo(navController.graph.startDestinationId) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    } 
+                                },
                                 icon = { Icon(Icons.Default.Home, contentDescription = "Games") },
                                 label = { Text("Home") }
                             )
                             NavigationBarItem(
                                 selected = currentRoute == "settings",
-                                onClick = { navController.navigate("settings") },
+                                onClick = {  
+                                    navController.navigate("settings") {
+                                        popUpTo(navController.graph.startDestinationId) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                },
                                 icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
                                 label = { Text("Settings") }
                             )
