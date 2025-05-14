@@ -15,6 +15,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Box
@@ -52,6 +53,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -194,26 +196,38 @@ fun AppNavHost() {
                         .fillMaxWidth(),
                     contentAlignment = Alignment.BottomCenter
                 ) {
-                    NavigationBar(
+                    Surface(
+                        color = NavigationBarDefaults.containerColor,
+                        contentColor = MaterialTheme.colorScheme.contentColorFor(containerColor),
+                        tonalElevation = 0.dp,
                         modifier = Modifier
                             .padding(horizontal = 16.dp)
                             .clip(RoundedCornerShape(24.dp))
                             .shadow(8.dp, RoundedCornerShape(24.dp))
-                            .background(MaterialTheme.colorScheme.surface),
-                        tonalElevation = 0.dp,
+                            .background(MaterialTheme.colorScheme.surface)
                     ) {
-                        NavigationBarItem(
-                            selected = currentRoute == "games",
-                            onClick = { navController.navigate("games") },
-                            icon = { Icon(Icons.Default.Home, contentDescription = "Games") },
-                            label = { Text("Home") }
-                        )
-                        NavigationBarItem(
-                            selected = currentRoute == "settings",
-                            onClick = { navController.navigate("settings") },
-                            icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
-                            label = { Text("Settings") }
-                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .windowInsetsPadding(NavigationBarDefaults.windowInsets)
+                                .wrapContentHeight()
+                                .selectableGroup(),
+                            horizontalArrangement = Arrangement.spacedBy(NavigationBarItemHorizontalPadding),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            NavigationBarItem(
+                                selected = currentRoute == "games",
+                                onClick = { navController.navigate("games") },
+                                icon = { Icon(Icons.Default.Home, contentDescription = "Games") },
+                                label = { Text("Home") }
+                            )
+                            NavigationBarItem(
+                                selected = currentRoute == "settings",
+                                onClick = { navController.navigate("settings") },
+                                icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
+                                label = { Text("Settings") }
+                            )
+                        }
                     }
                 }
             }
