@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class MainViewModel : ViewModel() {
     private val _isBottomNavigationVisible = MutableStateFlow(true)
-    val isBottomNavigationVisible = _isBottomBarVisible.asStateFlow()
+    val isBottomNavigationVisible = _isBottomNavigationVisible.asStateFlow()
 
     fun setBottomNavigationVisiblity(visible: Boolean) {
         _isBottomNavigationVisible.value = visible
