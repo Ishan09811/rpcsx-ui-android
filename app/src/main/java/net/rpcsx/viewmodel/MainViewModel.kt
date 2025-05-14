@@ -10,7 +10,7 @@ class MainViewModel : ViewModel() {
     private val _isBottomNavigationVisible = MutableStateFlow(true)
     val isBottomNavigationVisible = _isBottomNavigationVisible.asStateFlow()
 
-    fun setBottomNavigationVisiblity(visible: Boolean) {
+    fun setBottomNavigationVisibility(visible: Boolean) {
         _isBottomNavigationVisible.value = visible
     }
 }
