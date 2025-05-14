@@ -13,6 +13,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.selection.selectableGroup
@@ -93,6 +95,7 @@ import net.rpcsx.PrecompilerServiceAction
 import net.rpcsx.ProgressRepository
 import net.rpcsx.R
 import net.rpcsx.RPCSX
+import net.rpcsx.viewmodel.MainViewModel
 import net.rpcsx.UserRepository
 import net.rpcsx.dialogs.AlertDialogQueue
 import net.rpcsx.overlay.OverlayEditActivity
@@ -203,7 +206,7 @@ fun AppNavHost(viewModel: MainViewModel = viewModel()) {
                     animationSpec = tween(durationMillis = 300)
                  ),
                  exit = slideOutVertically(
-                    vtargetOffsetY = { it }, // Slide out to bottom
+                    targetOffsetY = { it }, // Slide out to bottom
                     animationSpec = tween(durationMillis = 200)
                 )
             ) {
