@@ -78,6 +78,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.rpcsx.R
 import net.rpcsx.RPCSX
+import net.rpcsx.overlay.OverlayEditActivity
 import net.rpcsx.viewmodel.MainViewModel
 import net.rpcsx.UserRepository
 import net.rpcsx.dialogs.AlertDialogQueue
@@ -681,7 +682,12 @@ fun ControllerSettings(
                     title = "Edit Overlay",
                     leadingIcon = null,
                     onClick = {
-                        //
+                        context.startActivity(
+                            Intent(
+                                context,
+                                OverlayEditActivity::class.java
+                            )
+                        )
                     }
                 )
             }
