@@ -2,10 +2,6 @@ package net.rpcsx.ui.games
 
 import android.content.Intent
 import android.net.Uri
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -378,23 +374,9 @@ fun GamesScreen(viewModel: MainViewModel = viewModel(LocalContext.current as Com
 
     val gameInProgress = games.find { it.progressList.isNotEmpty() }
 
-    val resumeTrigger = remember { mutableStateOf(0) }
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                resumeTrigger.value++
-            }
-        }
-
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-
     var lastScrollOffset by remember { mutableStateOf(0) }
 
-    LaunchedEffect(gridState, resumeTrigger) {
+    LaunchedEffect(Unit, gridState) {
         snapshotFlow { gridState.firstVisibleItemScrollOffset }
             .collect { offset ->
                 if (offset > lastScrollOffset) {
