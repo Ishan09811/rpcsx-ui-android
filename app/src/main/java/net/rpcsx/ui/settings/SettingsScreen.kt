@@ -483,7 +483,7 @@ fun SettingsScreen(
         val context = LocalContext.current
 
         LaunchedEffect(topBarScrollBehavior.state.collapsedFraction) {
-            val isCollapsed = topBarScrollBehavior.state.collapsedFraction >= 1f
+            val isCollapsed = topBarScrollBehavior.state.collapsedFraction > 0.8f
             viewModel.setBottomNavigationVisibility(!isCollapsed)
         }
 
