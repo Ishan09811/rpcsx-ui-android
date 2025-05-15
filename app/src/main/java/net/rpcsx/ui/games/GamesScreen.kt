@@ -2,6 +2,7 @@ package net.rpcsx.ui.games
 
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -58,7 +59,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.activityViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
 import net.rpcsx.viewmodel.MainViewModel
@@ -350,7 +351,7 @@ fun GameItem(game: Game) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GamesScreen(viewModel: MainViewModel = activityViewModel()) {
+fun GamesScreen(viewModel: MainViewModel = viewModel(LocalContext.current as ComponentActivity)) {
     val context = LocalContext.current
     val games = remember { GameRepository.list() }
     val isRefreshing by remember { GameRepository.isRefreshing }
