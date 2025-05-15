@@ -100,7 +100,6 @@ import net.rpcsx.RPCSX
 import net.rpcsx.viewmodel.MainViewModel
 import net.rpcsx.UserRepository
 import net.rpcsx.dialogs.AlertDialogQueue
-import net.rpcsx.overlay.OverlayEditActivity
 import net.rpcsx.ui.channels.DefaultGpuDriverChannel
 import net.rpcsx.ui.channels.DevRpcsxChannel
 import net.rpcsx.ui.channels.DevUiChannel
@@ -658,31 +657,6 @@ fun GamesDestination(
                         }
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                    NavigationDrawerItem(
-                        label = { Text("Settings") },
-                        selected = false,
-                        icon = { Icon(Icons.Default.Settings, null) },
-                        onClick = navigateToSettings
-                    )
-
-                    NavigationDrawerItem(
-                        label = { Text("Edit Overlay") },
-                        selected = false,
-                        icon = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_show_osc),
-                                null
-                            )
-                        },
-                        onClick = {
-                            context.startActivity(
-                                Intent(
-                                    context,
-                                    OverlayEditActivity::class.java
-                                )
-                            )
-                        }
-                    )
 
                     NavigationDrawerItem(
                         label = { Text("System Info") },
@@ -711,8 +685,6 @@ fun GamesDestination(
                             )
                         }
                     )
-
-                    HorizontalDivider()
 
                     NavigationDrawerItem(
                         label = { Text("About") },
