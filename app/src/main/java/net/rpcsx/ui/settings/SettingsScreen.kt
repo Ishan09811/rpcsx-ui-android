@@ -71,7 +71,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.documentfile.provider.DocumentFile
-import androidx.lifecycle.viewmodel.compose.activityViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -460,7 +460,7 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
     navigateBack: () -> Unit,
     navigateTo: (path: String) -> Unit,
-    viewModel: MainViewModel = activityViewModel()
+    viewModel: MainViewModel = viewModel(LocalContext.current as ComponentActivity)
 ) {
     val topBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val activeUser by remember { UserRepository.activeUser }
