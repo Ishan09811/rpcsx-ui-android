@@ -485,7 +485,6 @@ fun SettingsScreen(
         LaunchedEffect(topBarScrollBehavior.state.collapsedFraction) {
             val isCollapsed = topBarScrollBehavior.state.collapsedFraction > 0.8f
             viewModel.setBottomNavigationVisibility(!isCollapsed)
-            Log.w("Settings", "navigation visibility: ${!isCollapsed}")
         }
 
         LazyColumn(
