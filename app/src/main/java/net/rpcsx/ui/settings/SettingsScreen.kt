@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -55,7 +54,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -483,26 +481,16 @@ fun SettingsScreen(
                 })
         }) { contentPadding ->
         val context = LocalContext.current
-        val listState = rememberLazyListState()
-        var lastScrollOffset by remember { mutableStateOf(0) }
 
-        LaunchedEffect(listState) {
-            snapshotFlow { listState.firstVisibleItemScrollOffset }
-                .collect { offset ->
-                    if (offset > lastScrollOffset) {
-                        viewModel.setBottomNavigationVisibility(false)
-                    } else if (offset < lastScrollOffset) {
-                        viewModel.setBottomNavigationVisibility(true)
-                    }
-                    lastScrollOffset = offset
-                }
+        LaunchedEffect(topBarScrollBehavior.state.collapsedFraction) {
+            val isCollapsed = topBarScrollBehavior.state.collapsedFraction >= 1f
+            viewModel.setBottomNavigationVisibility(!isCollapsed)
         }
 
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(contentPadding),
-            state = listState
         ) {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
