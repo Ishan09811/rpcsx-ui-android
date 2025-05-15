@@ -2,6 +2,11 @@ package net.rpcsx.ui.games
 
 import android.content.Intent
 import android.net.Uri
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -59,7 +64,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
 import net.rpcsx.viewmodel.MainViewModel
@@ -372,9 +376,23 @@ fun GamesScreen(viewModel: MainViewModel = viewModel(LocalContext.current as Com
 
     val gameInProgress = games.find { it.progressList.isNotEmpty() }
 
+    val resumeTrigger = remember { mutableStateOf(0) }
+    DisposableEffect(LocalLifecycleOwner.current) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                resumeTrigger.value++
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
     var lastScrollOffset by remember { mutableStateOf(0) }
 
-    LaunchedEffect(gridState) {
+    LaunchedEffect(gridState, resumeTrigger) {
         snapshotFlow { gridState.firstVisibleItemScrollOffset }
             .collect { offset ->
                 if (offset > lastScrollOffset) {
