@@ -46,6 +46,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -357,6 +358,7 @@ fun GameItem(game: Game) {
 @Composable
 fun GamesScreen(viewModel: MainViewModel = viewModel(LocalContext.current as ComponentActivity)) {
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     val games = remember { GameRepository.list() }
     val isRefreshing by remember { GameRepository.isRefreshing }
     val state = rememberPullToRefreshState()
@@ -377,7 +379,7 @@ fun GamesScreen(viewModel: MainViewModel = viewModel(LocalContext.current as Com
     val gameInProgress = games.find { it.progressList.isNotEmpty() }
 
     val resumeTrigger = remember { mutableStateOf(0) }
-    DisposableEffect(LocalLifecycleOwner.current) {
+    DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 resumeTrigger.value++
