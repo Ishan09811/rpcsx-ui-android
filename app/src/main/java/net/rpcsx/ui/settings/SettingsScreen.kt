@@ -677,6 +677,34 @@ fun ControllerSettings(
             }
 
             item {
+                RegularPreference(
+                    title = "Edit Overlay",
+                    leadingIcon = null,
+                    onClick = {
+                        //
+                    }
+                )
+            }
+
+            item {
+                var itemValue by remember {
+                    mutableStateOf(
+                        GeneralSettings["auto_hide_overlay"] as Boolean? ?: true
+                    )
+                }
+                val def = true
+                SwitchPreference(
+                    checked = itemValue,
+                    title = "Enable Auto Hide Overlay" + if (itemValue == def) "" else " *",
+                    leadingIcon = null,
+                    onClick = { value ->
+                        GeneralSettings.setValue("auto_hide_overlay", value)
+                        itemValue = value
+                    }
+                )
+            }
+
+            item {
                 HorizontalDivider()
             }
 
