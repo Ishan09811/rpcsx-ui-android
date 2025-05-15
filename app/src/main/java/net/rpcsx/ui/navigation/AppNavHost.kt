@@ -86,7 +86,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.compose.activityViewModel
 import kotlinx.coroutines.launch
 import net.rpcsx.BuildConfig
 import net.rpcsx.EmulatorState
@@ -124,7 +124,7 @@ import org.json.JSONObject
 
 @Preview
 @Composable
-fun AppNavHost(viewModel: MainViewModel = viewModel()) {
+fun AppNavHost(viewModel: MainViewModel = activityViewModel()) {
     val context = LocalContext.current
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
