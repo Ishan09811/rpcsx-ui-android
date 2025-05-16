@@ -42,7 +42,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -83,7 +83,6 @@ import net.rpcsx.utils.RpcsxUpdater
 import net.rpcsx.utils.UiUpdater
 import java.io.File
 import kotlin.concurrent.thread
-import kotlinx.coroutines.launch
 
 private fun withAlpha(color: Color, alpha: Float): Color {
     return Color(
@@ -376,18 +375,16 @@ fun GamesScreen(viewModel: MainViewModel = viewModel(LocalContext.current as Com
 
     var lastScrollOffset by remember { mutableStateOf(0) }
 
-    SideEffect { 
-        coroutineScope.launch {
-            snapshotFlow { gridState.firstVisibleItemScrollOffset }
-                .collect { offset ->
-                    if (offset > lastScrollOffset) {
-                        viewModel.setBottomNavigationVisibility(false)
-                    } else if (offset < lastScrollOffset) {
-                        viewModel.setBottomNavigationVisibility(true)
-                    }
-                    lastScrollOffset = offset
+    LaunchedEffect(Unit, gridState) {
+        snapshotFlow { gridState.firstVisibleItemScrollOffset }
+            .collect { offset ->
+                if (offset > lastScrollOffset) {
+                    viewModel.setBottomNavigationVisibility(false)
+                } else if (offset < lastScrollOffset) {
+                    viewModel.setBottomNavigationVisibility(true)
                 }
-        }
+                lastScrollOffset = offset
+            }
     }
 
     val checkForUpdates = suspend {
@@ -399,10 +396,8 @@ fun GamesScreen(viewModel: MainViewModel = viewModel(LocalContext.current as Com
         }
     }
 
-    SideEffect { 
-        coroutineScope.launch {
-            checkForUpdates()
-        }
+    LaunchedEffect(Unit) {
+        checkForUpdates()
     }
 
     if (uiUpdateVersion != null && rpcsxUpdateVersion == null && activeDialogs.isEmpty()) {
