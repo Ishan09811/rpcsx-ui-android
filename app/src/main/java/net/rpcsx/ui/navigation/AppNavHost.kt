@@ -208,6 +208,29 @@ fun AppNavHost(viewModel: MainViewModel = viewModel(LocalContext.current as Comp
 
     val settings = remember { mutableStateOf(JSONObject(RPCSX.instance.settingsGet(""))) }
 
+    val installPkgLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri: Uri? ->
+            if (uri != null) PrecompilerService.start(
+                context,
+                PrecompilerServiceAction.Install,
+                uri
+            )
+        }
+    )
+
+    val gameFolderPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocumentTree(),
+        onResult = { uri: Uri? ->
+            uri?.let {
+                // TODO: FileUtil.saveGameFolderUri(prefs, it)
+                val takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                context.contentResolver.takePersistableUriPermission(it, takeFlags)
+                FileUtil.installPackages(context, it)
+            }
+        }
+    )
+
     Scaffold(
         bottomBar = {
             AnimatedVisibility(
@@ -259,6 +282,9 @@ fun AppNavHost(viewModel: MainViewModel = viewModel(LocalContext.current as Comp
                                 icon = { Icon(Icons.Default.Home, contentDescription = "Games") },
                                 label = { Text("Home") }
                             )
+                            
+                            DropUpFloatingActionButton(installPkgLauncher, gameFolderPickerLauncher)
+                            
                             NavigationBarItem(
                                 selected = currentRoute == "settings",
                                 onClick = {  
@@ -567,17 +593,6 @@ fun GamesDestination(
         UserRepository.load()
     }
 
-    val installPkgLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
-        onResult = { uri: Uri? ->
-            if (uri != null) PrecompilerService.start(
-                context,
-                PrecompilerServiceAction.Install,
-                uri
-            )
-        }
-    )
-
     val installFwLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri: Uri? ->
@@ -586,18 +601,6 @@ fun GamesDestination(
                 PrecompilerServiceAction.InstallFirmware,
                 uri
             )
-        }
-    )
-
-    val gameFolderPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocumentTree(),
-        onResult = { uri: Uri? ->
-            uri?.let {
-                // TODO: FileUtil.saveGameFolderUri(prefs, it)
-                val takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                context.contentResolver.takePersistableUriPermission(it, takeFlags)
-                FileUtil.installPackages(context, it)
-            }
         }
     )
 
@@ -750,9 +753,6 @@ fun GamesDestination(
                     }
                 )
             },
-            floatingActionButton = {
-                DropUpFloatingActionButton(installPkgLauncher, gameFolderPickerLauncher)
-            },
         ) { innerPadding -> Column(modifier = Modifier.padding(innerPadding)) { GamesScreen() } }
     }
 }
@@ -784,7 +784,8 @@ fun DropUpFloatingActionButton(
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     FloatingActionButton(
                         onClick = { installPkgLauncher.launch("*/*"); expanded = false },
-                        containerColor = MaterialTheme.colorScheme.secondary
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.size(30.dp)
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_description),
@@ -793,7 +794,8 @@ fun DropUpFloatingActionButton(
                     }
                     FloatingActionButton(
                         onClick = { gameFolderPickerLauncher.launch(null); expanded = false },
-                        containerColor = MaterialTheme.colorScheme.secondary
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_folder),
@@ -803,7 +805,7 @@ fun DropUpFloatingActionButton(
                 }
             }
 
-            FloatingActionButton(
+            Button(
                 onClick = { expanded = !expanded }
             ) {
                 Icon(Icons.Filled.Add, contentDescription = "Add")
