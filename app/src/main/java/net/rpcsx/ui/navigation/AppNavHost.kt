@@ -36,6 +36,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
@@ -232,8 +233,8 @@ fun AppNavHost(viewModel: MainViewModel = viewModel(LocalContext.current as Comp
                         tonalElevation = 0.dp,
                         modifier = Modifier
                             .padding(horizontal = 16.dp)
-                            .clip(RoundedCornerShape(24.dp))
-                            .shadow(8.dp, RoundedCornerShape(24.dp))
+                            .clip(CircleShape)
+                            .shadow(8.dp, CircleShape)
                             .background(MaterialTheme.colorScheme.surface)
                     ) {
                         Row(
