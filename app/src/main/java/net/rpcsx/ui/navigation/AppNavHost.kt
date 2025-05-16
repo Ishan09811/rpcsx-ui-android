@@ -316,8 +316,7 @@ fun AppNavHost(viewModel: MainViewModel = viewModel(LocalContext.current as Comp
     ) { innerPadding ->
         Box(
             modifier = Modifier
-                .windowInsetsPadding(NavigationBarDefaults.windowInsets)
-                .padding(bottom = 80.dp)
+                .padding(innerPadding)
                 .fillMaxWidth()
                 .zIndex(2f),
             contentAlignment = Alignment.BottomCenter
