@@ -314,41 +314,46 @@ fun AppNavHost(viewModel: MainViewModel = viewModel(LocalContext.current as Comp
             }
         }
     ) { innerPadding ->
-        AnimatedVisibility(
-            visible = fabExpanded,
-            enter = expandVertically(animationSpec = tween(300, easing = FastOutSlowInEasing)),
-            exit = shrinkVertically(animationSpec = tween(200, easing = FastOutSlowInEasing)),
+        Box(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
+                .windowInsetsPadding(NavigationBarDefaults.windowInsets)
                 .padding(bottom = 80.dp)
-                .zIndex(2f)
+                .fillMaxWidth()
+                .zIndex(2f),
+            contentAlignment = Alignment.BottomCenter
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                FloatingActionButton(
-                    onClick = {
-                        installPkgLauncher.launch("*/*")
-                        fabExpanded = false
-                    },
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.size(32.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_description),
-                        contentDescription = "Select Game"
-                    )
-                }
-                FloatingActionButton(
-                    onClick = {
-                        gameFolderPickerLauncher.launch(null)
-                        fabExpanded = false
-                    },
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.size(32.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_folder),
-                        contentDescription = "Select Folder"
-                    )
+            AnimatedVisibility(
+                visible = fabExpanded,
+                enter = expandVertically(animationSpec = tween(300, easing = FastOutSlowInEasing)),
+                exit = shrinkVertically(animationSpec = tween(200, easing = FastOutSlowInEasing))
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FloatingActionButton(
+                        onClick = {
+                            installPkgLauncher.launch("*/*")
+                            fabExpanded = false
+                        },
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_description),
+                            contentDescription = "Select Game"
+                        )
+                    }
+                    FloatingActionButton(
+                        onClick = {
+                            gameFolderPickerLauncher.launch(null)
+                            fabExpanded = false
+                        },
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_folder),
+                            contentDescription = "Select Folder"
+                        )
+                    }
                 }
             }
         }
