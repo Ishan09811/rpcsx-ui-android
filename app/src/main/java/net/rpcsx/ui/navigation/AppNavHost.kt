@@ -317,7 +317,7 @@ fun AppNavHost(viewModel: MainViewModel = viewModel(LocalContext.current as Comp
         Box(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxWidth()
+                .fillMaxSize()
                 .zIndex(2f),
             contentAlignment = Alignment.BottomCenter
         ) {
