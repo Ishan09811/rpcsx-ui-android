@@ -85,6 +85,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.zIndex
 import androidx.core.content.edit
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -261,7 +262,11 @@ fun AppNavHost(viewModel: MainViewModel = viewModel(LocalContext.current as Comp
                         ),
                         exit = androidx.compose.animation.shrinkVertically(
                             animationSpec = tween(200, easing = FastOutSlowInEasing)
-                        )
+                        ),
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(end = 24.dp, bottom = 80.dp)
+                            .zIndex(2f)
                     ) {
                         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             FloatingActionButton(
