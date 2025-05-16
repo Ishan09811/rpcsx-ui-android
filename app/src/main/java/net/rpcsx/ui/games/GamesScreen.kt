@@ -49,7 +49,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -357,6 +357,7 @@ fun GamesScreen(viewModel: MainViewModel = viewModel(LocalContext.current as Com
     val isRefreshing by remember { GameRepository.isRefreshing }
     val state = rememberPullToRefreshState()
     val gridState = rememberLazyGridState()
+    val isBottomNavigationVisible by viewModel.isBottomNavigationVisible.collectAsState()
     var uiUpdateVersion by remember { mutableStateOf<String?>(null) }
     var uiUpdate by remember { mutableStateOf(false) }
     var uiUpdateProgressValue by remember { mutableLongStateOf(0) }
@@ -373,13 +374,15 @@ fun GamesScreen(viewModel: MainViewModel = viewModel(LocalContext.current as Com
     val gameInProgress = games.find { it.progressList.isNotEmpty() }
 
     var lastScrollOffset by remember { mutableStateOf(0) } 
-    val offset = gridState.firstVisibleItemScrollOffset
-    if (offset > lastScrollOffset) {
-        viewModel.setBottomNavigationVisibility(false)
-    } else if (offset < lastScrollOffset) {
-        viewModel.setBottomNavigationVisibility(true)
+    LaunchedEffect(gridState, (gridState.firstVisibleItemScrollOffset > lastScrollOffset) != isBottomNavigationVisible) {
+        val offset = gridState.firstVisibleItemScrollOffset
+        if (offset > lastScrollOffset) {
+            viewModel.setBottomNavigationVisibility(false)
+        } else if (offset < lastScrollOffset) {
+            viewModel.setBottomNavigationVisibility(true)
+        }
+        lastScrollOffset = offset
     }
-    lastScrollOffset = offset
 
     val checkForUpdates = suspend {
         rpcsxUpdateVersion = RpcsxUpdater.checkForUpdate()
