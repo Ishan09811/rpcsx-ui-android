@@ -354,7 +354,6 @@ fun GameItem(game: Game) {
 @Composable
 fun GamesScreen(viewModel: MainViewModel = viewModel(LocalContext.current as ComponentActivity)) {
     val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
     val games = remember { GameRepository.list() }
     val isRefreshing by remember { GameRepository.isRefreshing }
     val state = rememberPullToRefreshState()
