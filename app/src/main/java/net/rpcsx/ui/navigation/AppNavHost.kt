@@ -147,6 +147,8 @@ fun AppNavHost(viewModel: MainViewModel = viewModel(LocalContext.current as Comp
         visibleState.targetState = currentRoute in listOf("games", "settings") && isBottomNavigationVisible
     }
 
+    var fabExpanded by remember { mutableStateOf(false) }
+
     var gpuDriverChannelList =
         prefs.getStringSet("gpu_driver_channel_list", setOf(DefaultGpuDriverChannel))?.toList()
     if (gpuDriverChannelList == null) {
@@ -252,6 +254,39 @@ fun AppNavHost(viewModel: MainViewModel = viewModel(LocalContext.current as Comp
                         .fillMaxWidth(),
                     contentAlignment = Alignment.BottomCenter
                 ) {
+                    AnimatedVisibility(
+                        visible = fabExpanded,
+                        enter = androidx.compose.animation.expandVertically(
+                            animationSpec = tween(300, easing = FastOutSlowInEasing)
+                        ),
+                        exit = androidx.compose.animation.shrinkVertically(
+                            animationSpec = tween(200, easing = FastOutSlowInEasing)
+                        )
+                    ) {
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            FloatingActionButton(
+                                onClick = { installPkgLauncher.launch("*/*"); fabExpanded = false },
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_description),
+                                    contentDescription = "Select Game"
+                                )
+                            }
+                            FloatingActionButton(
+                                onClick = { gameFolderPickerLauncher.launch(null); fabExpanded = false },
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_folder),
+                                    contentDescription = "Select Folder"
+                                )
+                            }
+                        }
+                    }
+                    
                     Surface(
                         color = NavigationBarDefaults.containerColor,
                         contentColor = MaterialTheme.colorScheme.contentColorFor(NavigationBarDefaults.containerColor),
@@ -285,7 +320,11 @@ fun AppNavHost(viewModel: MainViewModel = viewModel(LocalContext.current as Comp
                                 label = { Text("Home") }
                             )
                             
-                            DropUpFloatingActionButton(installPkgLauncher, gameFolderPickerLauncher)
+                            Button(
+                                onClick = { fabExpanded = !fabExpanded }
+                            ) {
+                                Icon(Icons.Filled.Add, contentDescription = "Add")
+                            }
                             
                             NavigationBarItem(
                                 selected = currentRoute == "settings",
@@ -756,62 +795,5 @@ fun GamesDestination(
                 )
             },
         ) { innerPadding -> Column(modifier = Modifier.padding(innerPadding)) { GamesScreen() } }
-    }
-}
-
-@Composable
-fun DropUpFloatingActionButton(
-    installPkgLauncher: ActivityResultLauncher<String>,
-    gameFolderPickerLauncher: ActivityResultLauncher<Uri?>
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Box(
-        modifier = Modifier.padding(16.dp),
-        contentAlignment = androidx.compose.ui.Alignment.BottomEnd
-    ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = androidx.compose.ui.Alignment.End
-        ) {
-            AnimatedVisibility(
-                visible = expanded,
-                enter = androidx.compose.animation.expandVertically(
-                    animationSpec = tween(300, easing = FastOutSlowInEasing)
-                ),
-                exit = androidx.compose.animation.shrinkVertically(
-                    animationSpec = tween(200, easing = FastOutSlowInEasing)
-                )
-            ) {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FloatingActionButton(
-                        onClick = { installPkgLauncher.launch("*/*"); expanded = false },
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_description),
-                            contentDescription = "Select Game"
-                        )
-                    }
-                    FloatingActionButton(
-                        onClick = { gameFolderPickerLauncher.launch(null); expanded = false },
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_folder),
-                            contentDescription = "Select Folder"
-                        )
-                    }
-                }
-            }
-
-            Button(
-                onClick = { expanded = !expanded }
-            ) {
-                Icon(Icons.Filled.Add, contentDescription = "Add")
-            }
-        }
     }
 }
