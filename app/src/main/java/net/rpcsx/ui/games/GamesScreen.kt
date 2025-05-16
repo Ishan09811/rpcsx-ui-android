@@ -42,7 +42,6 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -376,15 +375,13 @@ fun GamesScreen(viewModel: MainViewModel = viewModel(LocalContext.current as Com
     var lastScrollOffset by remember { mutableStateOf(0) }
 
     LaunchedEffect(Unit, gridState) {
-        snapshotFlow { gridState.firstVisibleItemScrollOffset }
-            .collect { offset ->
-                if (offset > lastScrollOffset) {
-                    viewModel.setBottomNavigationVisibility(false)
-                } else if (offset < lastScrollOffset) {
-                    viewModel.setBottomNavigationVisibility(true)
-                }
-                lastScrollOffset = offset
-            }
+        val offset = gridState.firstVisibleItemScrollOffset
+        if (offset > lastScrollOffset) {
+            viewModel.setBottomNavigationVisibility(false)
+        } else if (offset < lastScrollOffset) {
+            viewModel.setBottomNavigationVisibility(true)
+        }
+        lastScrollOffset = offset
     }
 
     val checkForUpdates = suspend {
