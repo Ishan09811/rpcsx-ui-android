@@ -372,17 +372,14 @@ fun GamesScreen(viewModel: MainViewModel = viewModel(LocalContext.current as Com
 
     val gameInProgress = games.find { it.progressList.isNotEmpty() }
 
-    var lastScrollOffset by remember { mutableStateOf(0) }
-
-    LaunchedEffect(Unit, gridState) {
-        val offset = gridState.firstVisibleItemScrollOffset
-        if (offset > lastScrollOffset) {
-            viewModel.setBottomNavigationVisibility(false)
-        } else if (offset < lastScrollOffset) {
-            viewModel.setBottomNavigationVisibility(true)
-        }
-        lastScrollOffset = offset
+    var lastScrollOffset by remember { mutableStateOf(0) } 
+    val offset = gridState.firstVisibleItemScrollOffset
+    if (offset > lastScrollOffset) {
+        viewModel.setBottomNavigationVisibility(false)
+    } else if (offset < lastScrollOffset) {
+        viewModel.setBottomNavigationVisibility(true)
     }
+    lastScrollOffset = offset
 
     val checkForUpdates = suspend {
         rpcsxUpdateVersion = RpcsxUpdater.checkForUpdate()
