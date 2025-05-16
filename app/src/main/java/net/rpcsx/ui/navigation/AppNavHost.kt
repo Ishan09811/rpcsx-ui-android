@@ -51,6 +51,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -785,7 +786,7 @@ fun DropUpFloatingActionButton(
                     FloatingActionButton(
                         onClick = { installPkgLauncher.launch("*/*"); expanded = false },
                         containerColor = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.size(30.dp)
+                        modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_description),
