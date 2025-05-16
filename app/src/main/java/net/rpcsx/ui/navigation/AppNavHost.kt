@@ -324,8 +324,8 @@ fun AppNavHost(viewModel: MainViewModel = viewModel(LocalContext.current as Comp
         ) {
             AnimatedVisibility(
                 visible = fabExpanded,
-                enter = expandVertically(animationSpec = tween(300, easing = FastOutSlowInEasing)),
-                exit = shrinkVertically(animationSpec = tween(200, easing = FastOutSlowInEasing))
+                enter = androidx.compose.animation.expandVertically(animationSpec = tween(300, easing = FastOutSlowInEasing)),
+                exit = androidx.compose.animation.shrinkVertically(animationSpec = tween(200, easing = FastOutSlowInEasing))
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     FloatingActionButton(
