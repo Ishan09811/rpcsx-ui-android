@@ -378,7 +378,7 @@ fun GamesScreen(viewModel: MainViewModel = viewModel(LocalContext.current as Com
         val offset = gridState.firstVisibleItemScrollOffset
         if (offset > lastScrollOffset) {
             viewModel.setBottomNavigationVisibility(false)
-        } else if (offset < lastScrollOffset) {
+        } else if (offset < lastScrollOffset || offset == 0) {
             viewModel.setBottomNavigationVisibility(true)
         }
         lastScrollOffset = offset
