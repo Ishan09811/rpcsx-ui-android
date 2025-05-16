@@ -255,43 +255,6 @@ fun AppNavHost(viewModel: MainViewModel = viewModel(LocalContext.current as Comp
                         .fillMaxWidth(),
                     contentAlignment = Alignment.BottomCenter
                 ) {
-                    AnimatedVisibility(
-                        visible = fabExpanded,
-                        enter = androidx.compose.animation.expandVertically(
-                            animationSpec = tween(300, easing = FastOutSlowInEasing)
-                        ),
-                        exit = androidx.compose.animation.shrinkVertically(
-                            animationSpec = tween(200, easing = FastOutSlowInEasing)
-                        ),
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(end = 24.dp, bottom = 80.dp)
-                            .zIndex(2f)
-                    ) {
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            FloatingActionButton(
-                                onClick = { installPkgLauncher.launch("*/*"); fabExpanded = false },
-                                containerColor = MaterialTheme.colorScheme.secondary,
-                                modifier = Modifier.size(32.dp)
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_description),
-                                    contentDescription = "Select Game"
-                                )
-                            }
-                            FloatingActionButton(
-                                onClick = { gameFolderPickerLauncher.launch(null); fabExpanded = false },
-                                containerColor = MaterialTheme.colorScheme.secondary,
-                                modifier = Modifier.size(32.dp)
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_folder),
-                                    contentDescription = "Select Folder"
-                                )
-                            }
-                        }
-                    }
-                    
                     Surface(
                         color = NavigationBarDefaults.containerColor,
                         contentColor = MaterialTheme.colorScheme.contentColorFor(NavigationBarDefaults.containerColor),
@@ -351,6 +314,45 @@ fun AppNavHost(viewModel: MainViewModel = viewModel(LocalContext.current as Comp
             }
         }
     ) { innerPadding ->
+        AnimatedVisibility(
+            visible = fabExpanded,
+            enter = expandVertically(animationSpec = tween(300, easing = FastOutSlowInEasing)),
+            exit = shrinkVertically(animationSpec = tween(200, easing = FastOutSlowInEasing)),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 80.dp)
+                .zIndex(2f)
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                FloatingActionButton(
+                    onClick = {
+                        installPkgLauncher.launch("*/*")
+                        fabExpanded = false
+                    },
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_description),
+                        contentDescription = "Select Game"
+                    )
+                }
+                FloatingActionButton(
+                    onClick = {
+                        gameFolderPickerLauncher.launch(null)
+                        fabExpanded = false
+                    },
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_folder),
+                        contentDescription = "Select Folder"
+                    )
+                }
+            }
+        }
+        
         NavHost(
             navController = navController,
             startDestination = "games"
