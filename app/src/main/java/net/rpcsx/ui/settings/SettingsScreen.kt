@@ -489,23 +489,14 @@ fun SettingsScreen(
             viewModel.setBottomNavigationVisibility(!isCollapsed)
         }
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(contentPadding),
-        ) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-
-            item(
-                key = "internal_directory"
-            ) {
-                HomePreference(
-                    title = "View Internal Directory",
-                    icon = { PreferenceIcon(icon = painterResource(R.drawable.ic_folder)) },
-                    description = "Open internal directory of RPCSX in file manager"
-                ) {
+        val settings = listOf(
+            HomeSettingItem(
+                key = "internal_directory",
+                title = "View Internal Directory",
+                description = "Open internal directory of RPCSX in file manager",
+                icon = { PreferenceIcon(icon = painterResource(R.drawable.ic_folder)) },
+                onClick = {
+                    viewModel.recordItemUsage("internal_directory")
                     if (!FileUtil.launchInternalDir(context)) {
                         AlertDialogQueue.showDialog(
                             "View Internal Directory Error",
@@ -513,50 +504,36 @@ fun SettingsScreen(
                         )
                     }
                 }
-            }
-
-            item(
-                key = "users"
-            ) {
-                HomePreference(
-                    title = "Users",
-                    description = "Active User: ${UserRepository.getUsername(activeUser)}",
-                    icon = {
-                        PreferenceIcon(icon = Icons.Default.Person)
-                    }
-                ) {
+            ),
+            HomeSettingItem(
+                key = "users",
+                title = "Users",
+                description = "Active User: ${UserRepository.getUsername(activeUser)}",
+                icon = {
+                    PreferenceIcon(icon = Icons.Default.Person)
+                },
+                onClick = { 
+                    viewModel.recordItemUsage("users")
                     navigateTo("users")
                 }
-            }
-
-            item(key = "update_channels") {
-                HomePreference(
-                    title = "Download Channels",
-                    icon = { PreferenceIcon(icon = painterResource(R.drawable.ic_cloud_download)) },
-                    description = "",
-                ) {
-                    navigateTo("update_channels")
+            ),
+            HomeSettingItem(
+                key = "advanced_settings",
+                title = "Advanced Settings",
+                icon = { Icon(painterResource(R.drawable.tune), null) },
+                description = "Configure emulator advanced settings",
+                onClick = { 
+                    viewModel.recordItemUsage("advanced_settings")
+                    navigateTo("settings@@$") 
                 }
-            }
-
-            item(key = "advanced_settings") {
-                HomePreference(
-                    title = "Advanced Settings",
-                    icon = { Icon(painterResource(R.drawable.tune), null) },
-                    description = "Configure emulator advanced settings"
-                ) {
-                    navigateTo("settings@@$")
-                }
-            }
-
-            item(
-                key = "custom_gpu_driver"
-            ) {
-                HomePreference(
-                    title = "Custom GPU Driver",
-                    icon = { Icon(painterResource(R.drawable.add_diamond), contentDescription = null) },
-                    description = "Install alternative drivers for potentially better performance or accuracy"
-                ) {
+            ),
+            HomeSettingItem(
+                key = "custom_gpu_driver",
+                title = "Custom GPU Driver",
+                icon = { Icon(painterResource(R.drawable.add_diamond), contentDescription = null) },
+                description = "Install alternative drivers for potentially better performance or accuracy",
+                onClick = { 
+                    viewModel.recordItemUsage("custom_gpu_driver")
                     if (RPCSX.instance.supportsCustomDriverLoading()) {
                         navigateTo("drivers")
                     } else {
@@ -568,24 +545,24 @@ fun SettingsScreen(
                         )
                     }
                 }
-            }
-
-            item(key = "controls") {
-                HomePreference(
-                    title = "Controls",
-                    icon = { Icon(painterResource(R.drawable.gamepad), null) },
-                    description = "Configure controller"
-                ) {
-                    navigateTo("controls")
+            ),
+            HomeSettingItem(
+                key = "controls",
+                title = "Controls",
+                icon = { Icon(painterResource(R.drawable.gamepad), null) },
+                description = "Configure controller",
+                onClick = { 
+                    viewModel.recordItemUsage("controls")
+                    navigateTo("controls") 
                 }
-            }
-
-            item(key = "share_logs") {
-                HomePreference(
-                    title = "Share Log",
-                    icon = { Icon(imageVector = Icons.Default.Share, contentDescription = null) },
-                    description = "Share RPCSX's log file to debug issues"
-                ) {
+            ),
+            HomeSettingItem(
+                key = "share_logs",
+                title = "Share Log",
+                icon = { Icon(imageVector = Icons.Default.Share, contentDescription = null) },
+                description = "Share RPCSX's log file to debug issues",
+                onClick = {
+                    viewModel.recordItemUsage("share_logs")
                     val file = DocumentFile.fromSingleUri(
                         context, DocumentsContract.buildDocumentUri(
                             AppDataDocumentProvider.AUTHORITY,
@@ -604,6 +581,25 @@ fun SettingsScreen(
                         Toast.makeText(context, "Log file not found!", Toast.LENGTH_SHORT).show()
                     }
                 }
+            )
+        )
+
+        val sortedSettings = settings.sortedByDescending { viewModel.itemUsageMap[it.key] ?: 0L }
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(contentPadding),
+        ) {
+            item { Spacer(modifier = Modifier.height(16.dp)) }
+
+            items(sortedSettings, key = { it.key }) { item ->
+                HomePreference(
+                    title = item.title,
+                    description = item.description,
+                    icon = item.icon,
+                    onClick = item.onClick
+                )
             }
         }
     }
@@ -881,6 +877,14 @@ fun ButtonMappingAnim() {
             .fillMaxSize()
     )
 }
+
+data class HomeSettingItem(
+    val key: String,
+    val title: String,
+    val description: String = "",
+    val icon: @Composable () -> Unit,
+    val onClick: () -> Unit
+)
 
 @Preview
 @Composable
