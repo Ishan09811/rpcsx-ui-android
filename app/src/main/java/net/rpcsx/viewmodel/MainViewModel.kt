@@ -10,7 +10,7 @@ class MainViewModel : ViewModel() {
     private val _isBottomNavigationVisible = MutableStateFlow(true)
     val isBottomNavigationVisible = _isBottomNavigationVisible.asStateFlow()
 
-    private val _itemUsageMap = mutableStateMapOf<String, Long>() // key -> last used timestamp
+    private val _itemUsageMap = mutableStateMapOf<String, Long>()
     val itemUsageMap: Map<String, Long> get() = _itemUsageMap    
 
     fun setBottomNavigationVisibility(visible: Boolean) {
