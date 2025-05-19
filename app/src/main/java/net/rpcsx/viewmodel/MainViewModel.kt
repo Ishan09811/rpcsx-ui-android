@@ -4,6 +4,7 @@ package net.rpcsx.viewmodel
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class MainViewModel : ViewModel() {
     private val _isBottomNavigationVisible = MutableStateFlow(true)
