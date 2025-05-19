@@ -290,9 +290,17 @@ fun AppNavHost(viewModel: MainViewModel = viewModel(LocalContext.current as Comp
                             )
                             
                             Button(
-                                onClick = { fabExpanded = !fabExpanded }
+                                onClick = {
+                                    if (currentRoute == "settings") {
+                                        AlertDialogQueue.showDialog(
+                                            "RPCSX UI Android",
+                                            "UI ${BuildConfig.Version}\nRPCSX ${RpcsxUpdater.getCurrentVersion()}",
+                                            confirmText = "Copy",
+                                        )
+                                    } else { fabExpanded = !fabExpanded }
+                                }
                             ) {
-                                Icon(Icons.Filled.Add, contentDescription = "Add")
+                                if (currentRoute == "settings") Icon(Icons.Outlined.Info, contentDescription = null) else Icon(Icons.Filled.Add, contentDescription = "Add")
                             }
                             
                             NavigationBarItem(
@@ -323,7 +331,7 @@ fun AppNavHost(viewModel: MainViewModel = viewModel(LocalContext.current as Comp
             contentAlignment = Alignment.BottomCenter
         ) {
             AnimatedVisibility(
-                visible = fabExpanded,
+                visible = fabExpanded && currentRoute != "settings",
                 enter = androidx.compose.animation.expandVertically(animationSpec = tween(300, easing = FastOutSlowInEasing)),
                 exit = androidx.compose.animation.shrinkVertically(animationSpec = tween(200, easing = FastOutSlowInEasing))
             ) {
@@ -742,20 +750,6 @@ fun GamesDestination(
                             )
                         }
                     )
-
-                    NavigationDrawerItem(
-                        label = { Text("About") },
-                        selected = false,
-                        icon = { Icon(Icons.Outlined.Info, contentDescription = null) },
-                        onClick = {
-                            AlertDialogQueue.showDialog(
-                                "RPCSX UI Android",
-                                "UI ${BuildConfig.Version}\nRPCSX ${RpcsxUpdater.getCurrentVersion()}",
-                                confirmText = "Copy",
-                            )
-                        }
-                    )
-
                 }
             }
         }
