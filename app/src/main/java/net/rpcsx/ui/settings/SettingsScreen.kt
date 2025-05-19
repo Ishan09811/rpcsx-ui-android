@@ -467,6 +467,7 @@ fun SettingsScreen(
 ) {
     val topBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val activeUser by remember { UserRepository.activeUser }
+    val itemUsageMap by viewModel.itemUsageMap.collectAsState()
 
     Scaffold(
         modifier = Modifier
@@ -585,7 +586,7 @@ fun SettingsScreen(
             )
         )
 
-        val sortedSettings = settings.sortedByDescending { viewModel.itemUsageMap[it.key] ?: 0L }
+        val sortedSettings = settings.sortedByDescending { itemUsageMap[it.key] ?: 0L }
 
         LazyColumn(
             modifier = Modifier
