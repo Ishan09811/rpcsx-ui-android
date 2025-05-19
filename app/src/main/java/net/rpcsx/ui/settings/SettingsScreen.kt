@@ -602,7 +602,7 @@ fun SettingsScreen(
                     description = item.description,
                     icon = item.icon,
                     onClick = item.onClick,
-                    modifier = Modifier.animateItemPlacement()
+                    modifier = Modifier.animateItem()
                 )
             }
         }
