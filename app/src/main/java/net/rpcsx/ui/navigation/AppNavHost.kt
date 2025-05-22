@@ -342,7 +342,7 @@ fun AppNavHost(viewModel: MainViewModel = viewModel(LocalContext.current as Comp
                             fabExpanded = false
                         },
                         containerColor = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(60.dp)
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_description),
@@ -355,7 +355,7 @@ fun AppNavHost(viewModel: MainViewModel = viewModel(LocalContext.current as Comp
                             fabExpanded = false
                         },
                         containerColor = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(60.dp)
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_folder),
