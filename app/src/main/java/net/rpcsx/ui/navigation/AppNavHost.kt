@@ -62,9 +62,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import kotlinx.coroutines.launch
 import net.rpcsx.BuildConfig
 import net.rpcsx.EmulatorState
@@ -89,6 +91,7 @@ import net.rpcsx.ui.channels.channelsToUiText
 import net.rpcsx.ui.channels.uiTextToChannel
 import net.rpcsx.ui.channels.uiTextToChannels
 import net.rpcsx.ui.drivers.GpuDriversScreen
+import net.rpcsx.ui.games.GameDetailsScreen
 import net.rpcsx.ui.games.GamesScreen
 import net.rpcsx.ui.settings.AdvancedSettingsScreen
 import net.rpcsx.ui.settings.ControllerSettings
@@ -170,6 +173,7 @@ fun AppNavHost() {
     if (rpcsxLibrary == null) {
         GamesDestination(
             navigateToSettings = { },
+            {},
             drawerState
         )
 
@@ -190,8 +194,23 @@ fun AppNavHost() {
         ) {
             GamesDestination(
                 navigateToSettings = { navigateTo("settings") },
+                navigateToGameDetailsScreen = { gamePath ->
+                    navController.navigate("game_details/${Uri.encode(gamePath)}")
+                },
                 drawerState
             )
+        }
+
+        composable(
+            route = "game_details/{gamePath}",
+            arguments = listOf(
+                navArgument("gamePath") {
+                    type = NavType.StringType
+                }
+            )
+        ) {  backStackEntry ->
+            val gamePath = backStackEntry.arguments?.getString("gamePath")
+            GameDetailsScreen(gamePath = gamePath ?: "")
         }
 
         composable(
@@ -473,6 +492,7 @@ fun AppNavHost() {
 @Composable
 fun GamesDestination(
     navigateToSettings: () -> Unit,
+    navigateToGameDetailsScreen: (String) -> Unit,
     drawerState: androidx.compose.material3.DrawerState
 ) {
     val context = LocalContext.current
@@ -483,7 +503,7 @@ fun GamesDestination(
     val rpcsxLibrary by remember { RPCSX.activeLibrary }
 
     if (rpcsxLibrary == null) {
-        GamesScreen()
+        GamesScreen({})
         return
     }
 
@@ -722,7 +742,7 @@ fun GamesDestination(
             floatingActionButton = {
                 DropUpFloatingActionButton(installPkgLauncher, gameFolderPickerLauncher)
             },
-        ) { innerPadding -> Column(modifier = Modifier.padding(innerPadding)) { GamesScreen() } }
+        ) { innerPadding -> Column(modifier = Modifier.padding(innerPadding)) { GamesScreen(navigateToGameDetailsScreen) } }
     }
 }
 

@@ -9,7 +9,7 @@ plugins {
 android {
     namespace = "net.rpcsx"
     compileSdk = 36
-    ndkVersion = "29.0.13113456"
+    ndkVersion = "29.0.14206865"
 
     defaultConfig {
         applicationId = "net.rpcsx"
@@ -107,6 +107,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.coil.compose)
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
     implementation(libs.squareup.okhttp3)
     implementation(libs.androidx.documentfile)
     implementation(libs.com.github.ishan09811.materialswitch)

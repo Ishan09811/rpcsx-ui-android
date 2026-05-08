@@ -76,6 +76,8 @@ import net.rpcsx.utils.FileUtil
 import net.rpcsx.utils.RpcsxUpdater
 import net.rpcsx.utils.UiUpdater
 import java.io.File
+import kotlin.String
+import kotlin.Unit
 import kotlin.concurrent.thread
 
 private fun withAlpha(color: Color, alpha: Float): Color {
@@ -86,7 +88,7 @@ private fun withAlpha(color: Color, alpha: Float): Color {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun GameItem(game: Game) {
+fun GameItem(game: Game, navigateToGameDetailsScreen: (String) -> Unit) {
     val context = LocalContext.current
     val menuExpanded = remember { mutableStateOf(false) }
     val iconExists = remember { mutableStateOf(false) }
@@ -213,9 +215,11 @@ fun GameItem(game: Game) {
                         }
                     }
                 }, onLongClick = {
-                    if (game.info.name.value != "VSH") {
+                    /*if (game.info.name.value != "VSH") {
                         menuExpanded.value = true
-                    }
+                    }*/
+
+                    navigateToGameDetailsScreen.invoke(game.info.path)
                 })
         ) {
             if (game.info.iconPath.value != null && !iconExists.value) {
@@ -346,7 +350,7 @@ fun GameItem(game: Game) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GamesScreen() {
+fun GamesScreen(navigateToGameDetailsScreen: (String) -> Unit) {
     val context = LocalContext.current
     val games = remember { GameRepository.list() }
     val isRefreshing by remember { GameRepository.isRefreshing }
@@ -595,13 +599,13 @@ fun GamesScreen() {
             modifier = Modifier.fillMaxSize()
         ) {
             items(count = games.size, key = { index -> games[index].info.path }) { index ->
-                GameItem(games[index])
+                GameItem(games[index], navigateToGameDetailsScreen)
             }
         }
     }
 }
 
-@Preview
+/*@Preview
 @Composable
 fun GamesScreenPreview() {
     listOf(
@@ -609,4 +613,4 @@ fun GamesScreenPreview() {
     ).forEach { x -> GameRepository.addPreview(arrayOf(GameInfo(x, x))) }
 
     GamesScreen()
-}
+}*/
