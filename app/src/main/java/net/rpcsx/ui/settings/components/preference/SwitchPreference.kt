@@ -22,8 +22,8 @@ import net.rpcsx.ui.settings.components.core.PreferenceIcon
 import net.rpcsx.ui.settings.components.core.PreferenceSubtitle
 import net.rpcsx.ui.settings.components.core.PreferenceTitle
 import net.rpcsx.ui.settings.components.util.ComposePreview
-import com.github.ishan09811.materialswitch.MaterialSwitch
-import com.github.ishan09811.materialswitch.MaterialSwitchColors
+import io.github.materialswitch.MaterialSwitch
+import io.github.materialswitch.MaterialSwitchColors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
